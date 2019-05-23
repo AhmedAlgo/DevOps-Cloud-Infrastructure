@@ -99,6 +99,7 @@ Create a small batch script called getdata.sh which performs the following:
 
 ## Check your work 
 Here is what the contents of your git repository should look like before final submission: 
+
 ┣ access_log 
 
 ┣ activity.json 
