@@ -1,0 +1,26 @@
+properties([pipelineTriggers([githubPush()])])
+
+node('linux'){
+    stage('Unit Tests'){
+        git 'https://github.com/AhmedAlgo/java-project.git'
+        sh 'ant -f test.xml -v'
+        junit 'reports/result.xml'
+    }
+    
+    stage('Build'){
+        sh 'ant -f build.xml -v'
+    }
+    
+    stage('Deploy'){
+        sh 'aws s3 cp /workspace/java-pipeline/dist/rectangle-${BUILD_NUMBER}.jar s3://ahmed-algo-assignment-4'
+    }
+    
+    stage('Report') {
+     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', 
+                       accessKeyVariable: 'AWS_ACCESS_KEY_ID', 
+                       credentialsId: 'c6838cfa-2ea1-4c68-b490-c77057d34cf3', 
+                       secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+       sh 'aws cloudformation describe-stack-resources --stack-name jenkins --region us-east-1' 
+    }
+  } 
+}
