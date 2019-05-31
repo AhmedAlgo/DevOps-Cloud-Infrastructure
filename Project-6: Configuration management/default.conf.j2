@@ -1,0 +1,9 @@
+server  {
+listen      80;
+        server_name {{ ansible_fqdn }};
+        location / {
+        root  /var/www/ansible_fqdn/public_html/;
+        index index.html index.htm;
+        }
+	
+}
