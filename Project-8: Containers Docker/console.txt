@@ -1,0 +1,84 @@
+Started by user admin
+Obtained Jenkinsfile from git https://github.com/UST-SEIS665/hw11-seis665-01-spring2019-AhmedAlgo.git
+Running in Durability level: MAX_SURVIVABILITY
+[Pipeline] properties
+[Pipeline] node
+Running on 9a0f4921d76f in /workspace/docker-pipeline
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Setup)
+[Pipeline] git
+Fetching changes from the remote Git repository
+Checking out Revision bfd022fe879e546be4ceed1192c5757a88ae1a21 (refs/remotes/origin/master)
+Commit message: "Update Jenkinsfile"
+[Pipeline] sh
++ aws s3 cp s3://ahmed-algo-assignment-4/classweb.html /workspace/docker-pipeline/index.html
+Completed 64 Bytes/64 Bytes (1.6 KiB/s) with 1 file(s) remaining
+download: s3://ahmed-algo-assignment-4/classweb.html to ./index.html
+ > git rev-parse --is-inside-work-tree # timeout=10
+ > git config remote.origin.url https://github.com/UST-SEIS665/hw11-seis665-01-spring2019-AhmedAlgo.git # timeout=10
+Fetching upstream changes from https://github.com/UST-SEIS665/hw11-seis665-01-spring2019-AhmedAlgo.git
+ > git --version # timeout=10
+using GIT_ASKPASS to set credentials 
+ > git fetch --tags --progress https://github.com/UST-SEIS665/hw11-seis665-01-spring2019-AhmedAlgo.git +refs/heads/*:refs/remotes/origin/*
+ > git rev-parse refs/remotes/origin/master^{commit} # timeout=10
+ > git rev-parse refs/remotes/origin/origin/master^{commit} # timeout=10
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f bfd022fe879e546be4ceed1192c5757a88ae1a21
+ > git branch -a -v --no-abbrev # timeout=10
+ > git branch -D master # timeout=10
+ > git checkout -b master bfd022fe879e546be4ceed1192c5757a88ae1a21
+ > git rev-list --no-walk fcb34acf15ac62b284f062e447fed74593f8973a # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build)
+[Pipeline] sh
++ docker build -t classweb:1.0 .
+Sending build context to Docker daemon  110.1kB
+
+Step 1/4 : FROM nginx
+ ---> 27a188018e18
+Step 2/4 : LABEL maintainer="Ahmed Algo algo0001@stthomas.edu"
+ ---> Using cache
+ ---> 3936239c1c3c
+Step 3/4 : EXPOSE 80
+ ---> Using cache
+ ---> 3ef14d129d2d
+Step 4/4 : COPY ${WORKSPACE}/index.html /usr/share/nginx/html/
+ ---> Using cache
+ ---> a9b029b1e7b2
+Successfully built a9b029b1e7b2
+Successfully tagged classweb:1.0
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Test)
+[Pipeline] sh
++ docker run -d --name classweb1 -p 80:80 --env NGINX_PORT=80 classweb:1.0
+cb25b0f59c25a0e21919f0389f106e611971ae475fd961a9aabc32bf81a843d0
+[Pipeline] sh
++ docker inspect --format {{ .NetworkSettings.IPAddress}} classweb1
++ curl http://172.17.0.3
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0<html>
+<body>
+ <h1>My class webserver</h1>
+</body>
+</html>
+
+100    64  100    64    0     0  64000      0 --:--:-- --:--:-- --:--:-- 64000
+[Pipeline] sh
++ docker stop classweb1
+classweb1
+[Pipeline] sh
++ docker rm --force classweb1
+classweb1
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS
